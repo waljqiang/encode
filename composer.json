@@ -14,7 +14,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Waljqiang\\Encode\\": "src/"
+            "Waljqiang\\Encode\\": "src/",
+            "Encode\\":"src/Class"
         }
     }
 }
