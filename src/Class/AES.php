@@ -17,17 +17,17 @@ class AES implements EncodeInterface{
 			$random = $this->getRandomStr();
 			$text = $random . pack("N", strlen($text)) . $text;
 			// 网络字节序
-			$size = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-			$module = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
+			$size = @mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+			$module = @mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
 			$iv = substr($this->key, 0, 16);
 			//使用自定义的填充方式对明文进行补位填充
 			$pkc_encoder = new PKCS7Encode;
 			$text = $pkc_encoder->encode($text);
-			mcrypt_generic_init($module, $this->key, $iv);
+			@mcrypt_generic_init($module, $this->key, $iv);
 			//加密
 			$encrypted = mcrypt_generic($module, $text);
-			mcrypt_generic_deinit($module);
-			mcrypt_module_close($module);
+			@mcrypt_generic_deinit($module);
+			@mcrypt_module_close($module);
 
 			return base64_encode($encrypted);
 		}catch(\Exception $e){
@@ -39,14 +39,14 @@ class AES implements EncodeInterface{
 		try {
 			//使用BASE64对需要解密的字符串进行解码
 			$ciphertext_dec = base64_decode($data);
-			$module = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
+			$module = @mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
 			$iv = substr($this->key, 0, 16);
-			mcrypt_generic_init($module, $this->key, $iv);
+			@mcrypt_generic_init($module, $this->key, $iv);
 
 			//解密
-			$decrypted = mdecrypt_generic($module, $ciphertext_dec);
-			mcrypt_generic_deinit($module);
-			mcrypt_module_close($module);
+			$decrypted = @mdecrypt_generic($module, $ciphertext_dec);
+			@mcrypt_generic_deinit($module);
+			@mcrypt_module_close($module);
 		} catch (Exception $e) {
 			throw new \Exception("AES decrypt failure", -1);
 		}
