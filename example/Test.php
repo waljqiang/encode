@@ -2,9 +2,10 @@
 require_once __DIR__ . "/../vendor/autoload.php";
 use Waljqiang\Encode\Encode;
 try{
-	$encode = new Encode("waljqiang",Encode::AES,[
-		"key" => "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG"
-	]);
+	$encode = new Encode();
+    $encode->init("waljqiang",Encode::AES,[
+        "key" => "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG"
+    ]);
 	$data = '{
 "fun": "1",
 "service_type":"1",

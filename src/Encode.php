@@ -17,10 +17,11 @@ class Encode{
 
 	private $encode;
 
-	public function __construct($token,$type,$encodeConfig){
-		if(empty($token)){
-			throw new \Exception("Token invalid",-1);
-		}
+	public function __construct(){
+
+	}
+
+	public function init($token,$type,$encodeConfig){
 		$this->setNonce();
 		$this->setTimeStamp();
 		$className = "\\Encode\\" . $type;
