@@ -22,6 +22,7 @@ class Encode{
 	}
 
 	public function init($token,$type,$encodeConfig){
+		$this->setToken($token);
 		$this->setNonce();
 		$this->setTimeStamp();
 		$className = "\\Encode\\" . $type;
