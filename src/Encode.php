@@ -9,10 +9,7 @@ class Encode{
 	private $token;
 	private $nonce;
 	private $timeStamp;
-	/**
-	 * 签名
-	 * @var [type]
-	 */
+
 	private $signature;
 
 	private $encode;
@@ -21,12 +18,14 @@ class Encode{
 
 	}
 
-	public function init($token,$type,$encodeConfig){
+	public function init($token,$type="",$encodeConfig=[]){
 		$this->setToken($token);
 		$this->setNonce();
 		$this->setTimeStamp();
-		$className = "\\Encode\\" . $type;
-		$this->encode = new $className($encodeConfig);
+		if(!empty($type)){
+			$className = "\\Encode\\" . $type;
+			$this->encode = new $className($encodeConfig);
+		}
 	}
 
 	public function setToken($token){
@@ -50,24 +49,32 @@ class Encode{
 	}
 
 	public function encode($data){
-		$encrypted = $this->encode->encrypt($data);
-		//生成安全签名
-		$signature = SHA1::getSHA1($this->token, $this->timeStamp, $this->nonce,$encrypted);
-		return [
-			"signature" => $signature,
-			"timestamp" => $this->timeStamp,
-			"nonce" => $this->nonce,
-			"encrypted" => $this->ishex ? bin2hex($encrypted) : $encrypted
-		];
+		if(!empty($this->encode)){
+			$encrypted = $this->encode->encrypt($data);
+			//生成安全签名
+			$signature = SHA1::getSHA1($this->token, $this->timeStamp, $this->nonce,$encrypted);
+			return [
+				"signature" => $signature,
+				"timestamp" => $this->timeStamp,
+				"nonce" => $this->nonce,
+				"encrypted" => $this->ishex ? bin2hex($encrypted) : $encrypted
+			];
+		}else{
+			return $data;
+		}
 	}
 
 	public function decode($data){
-		$encrypted = $this->ishex ? hex2bin($data) : $data;
-		//验证安全签名
-		if(!$this->checkSignature($encrypted)){
-			throw new \Exception("Signature error", -1);	
+		if(!empty($this->encode)){
+			$encrypted = $this->ishex ? hex2bin($data) : $data;
+			//验证安全签名
+			if(!$this->checkSignature($encrypted)){
+				throw new \Exception("Signature error", -1);	
+			}
+			return $this->encode->decrypt($encrypted);
+		}else{
+			return $data;
 		}
-		return $this->encode->decrypt($encrypted);
 	}
 
 	public function getRandomStr($length = 16){
